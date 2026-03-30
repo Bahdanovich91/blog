@@ -8,4 +8,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+RUN groupmod -g 1000 www-data \
+    && usermod -u 1000 -g 1000 www-data
+
 WORKDIR /var/www/html
+
+USER www-data

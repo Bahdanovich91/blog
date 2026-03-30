@@ -21,9 +21,9 @@ readonly class App
 
             $this->router->dispatch($uri, $method);
         } catch (Throwable $e) {
-            http_response_code(500);
+            http_response_code($e->getCode());
 
-            echo '<h1>500 Internal Server Error</h1>';
+            echo $e->getMessage();
         }
     }
 

@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core;
+
+use Smarty\Exception;
+use Smarty\Smarty;
+
+abstract class BaseController
+{
+    protected Smarty $smarty;
+
+    public function __construct()
+    {
+        $this->smarty = new Smarty();
+
+        $this->smarty->setTemplateDir(__DIR__ . '/../../templates/');
+        $this->smarty->setCompileDir(__DIR__ . '/../../var/compile/');
+        $this->smarty->setCacheDir(__DIR__ . '/../../var/cache/');
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function render(string $template, array $data = []): void
+    {
+        foreach ($data as $key => $value) {
+            $this->smarty->assign($key, $value);
+        }
+
+        $this->smarty->display($template);
+    }
+}

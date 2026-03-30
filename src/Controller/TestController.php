@@ -2,14 +2,17 @@
 
 namespace App\Controller;
 
+use App\Core\BaseController;
 use App\Core\Route;
 
-class TestController
+class TestController extends BaseController
 {
     #[Route('/test')]
     public function test(): void
     {
-        var_dump(1111);
+        $this->render('test.tpl', [
+            'value' => 1111
+        ]);
     }
 
     #[Route('/test/{id}')]

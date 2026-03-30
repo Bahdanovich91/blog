@@ -12,6 +12,8 @@ use ReflectionMethod;
 class Router
 {
     private array $routes = [];
+    private string $controllerDir = __DIR__ . '/../Controller';
+    private string $controllerNamespace = 'App\\Controller';
 
     /**
      * @throws ReflectionException
@@ -58,13 +60,11 @@ class Router
     private function findControllerClasses(): array
     {
         $classes = [];
-        $controllerDir = __DIR__ . '/../Controller';
-        $namespace = 'App\\Controller';
 
-        $baseDir = rtrim($controllerDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $baseDir = rtrim($this->controllerDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($controllerDir, FilesystemIterator::SKIP_DOTS)
+            new RecursiveDirectoryIterator($this->controllerDir, FilesystemIterator::SKIP_DOTS)
         );
 
         foreach ($iterator as $file) {
@@ -72,7 +72,7 @@ class Router
                 $fullPath = $file->getPathname();
                 $relativePath = substr($fullPath, strlen($baseDir));
 
-                $className = $namespace . '\\' . str_replace(
+                $className = $this->controllerNamespace . '\\' . str_replace(
                         DIRECTORY_SEPARATOR,
                         '\\',
                         substr($relativePath, 0, -4)
