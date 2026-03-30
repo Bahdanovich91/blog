@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Core\Http;
 
 use App\Core\Routing\Router;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -20,16 +22,21 @@ readonly class App
     public function handle(): void
     {
         try {
-            $this->router->dispatch(
+            $response = $this->router->dispatch(
                 $this->getUri(),
                 $this->getMethod(),
                 $this->getRequest()
             );
         } catch (Throwable $e) {
-            http_response_code($e->getCode());
-
-            echo $e->getMessage();
+            $response = new Response(
+                $e->getCode() ?: 500,
+                [],
+                $e->getMessage()
+            );
         }
+
+        $emitter = new SapiEmitter();
+        $emitter->emit($response);
     }
 
     private function getUri(): string

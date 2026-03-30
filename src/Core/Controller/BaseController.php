@@ -23,12 +23,12 @@ abstract class BaseController
     /**
      * @throws Exception
      */
-    protected function render(string $template, array $data = []): void
+    protected function render(string $template, array $data = []): string
     {
         foreach ($data as $key => $value) {
             $this->smarty->assign($key, $value);
         }
 
-        $this->smarty->display($template);
+        return $this->smarty->fetch($template);
     }
 }

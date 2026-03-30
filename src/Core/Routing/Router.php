@@ -4,12 +4,15 @@ namespace App\Core\Routing;
 
 use App\Core\Container\Container;
 use FilesystemIterator;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionNamedType;
 
 class Router
 {
@@ -96,7 +99,7 @@ class Router
     /**
      * @throws ReflectionException
      */
-    public function dispatch(string $uri, string $method, $request): void
+    public function dispatch(string $uri, string $method, ServerRequestInterface $request): ResponseInterface
     {
         foreach ($this->routes as $route) {
             if (!in_array($method, $route['methods'])) {
@@ -105,28 +108,27 @@ class Router
 
             if (preg_match($route['pattern'], $uri, $matches)) {
                 $params = $this->extractParams($matches);
-
                 $controller = $this->container->get($route['controller']);
-
                 $reflection = new \ReflectionMethod($controller, $route['method']);
-                $args = [];
 
+                $args = [];
                 foreach ($reflection->getParameters() as $param) {
-                    $type = $param->getType()?->getName();
-                    if ($type === ServerRequestInterface::class) {
-                        $args[] = $request;
-                    } else {
-                        $args[] = $params[$param->getName()] ?? null;
-                    }
+                    $type = $param->getType();
+
+                    $args[] = match (true) {
+                        $type instanceof \ReflectionNamedType && $type->getName() === ServerRequestInterface::class => $request,
+                        default => $params[$param->getName()] ?? null,
+                    };
                 }
 
-                call_user_func_array([$controller, $route['method']], $args);
-                return;
+                /** @var ResponseInterface $response */
+                $response = call_user_func_array([$controller, $route['method']], $args);
+
+                return $response;
             }
         }
 
-        http_response_code(404);
-        echo "404 Not Found";
+        return new Response(404, [], '404 Not Found');
     }
 
     private function extractParams(array $matches): array

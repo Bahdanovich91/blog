@@ -6,6 +6,7 @@ namespace App\Core\Container;
 
 use Exception;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 class Container
@@ -51,21 +52,33 @@ class Container
         return $object;
     }
 
-    private function resolveParameter(ReflectionParameter $param)
+    private function resolveParameter(\ReflectionParameter $param)
     {
         $type = $param->getType();
 
-        if ($type === null) {
-            throw new Exception("Cannot resolve untyped parameter: {$param->getName()}");
-        }
+//        if ($type === null) {
+//            throw new Exception("Cannot resolve untyped parameter: {$param->getName()}");
+//        }
+//
+//        if (!$type instanceof ReflectionNamedType) {
+//            throw new Exception("Cannot resolve union/complex type: {$param->getName()}");
+//        }
+//
+//        if ($type->isBuiltin()) {
+//            if ($param->isDefaultValueAvailable()) {
+//                return $param->getDefaultValue();
+//            }
+//            throw new Exception("Cannot resolve builtin parameter: {$param->getName()}");
+//        }
+//
+//        return $this->get($type->getName());
 
-        if ($type->isBuiltin()) {
-            if ($param->isDefaultValueAvailable()) {
-                return $param->getDefaultValue();
-            }
-            throw new Exception("Cannot resolve builtin parameter: {$param->getName()}");
-        }
-
-        return $this->get($type->getName());
+        return match(true) {
+            $type === null => throw new Exception("Cannot resolve untyped parameter: {$param->getName()}"),
+            !$type instanceof ReflectionNamedType => throw new Exception("Cannot resolve union/complex type: {$param->getName()}"),
+            $type->isBuiltin() && $param->isDefaultValueAvailable() => $param->getDefaultValue(),
+            $type->isBuiltin() => throw new Exception("Cannot resolve builtin parameter: {$param->getName()}"),
+            default => $this->get($type->getName()),
+        };
     }
 }
