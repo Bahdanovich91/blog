@@ -53,8 +53,12 @@ class Router
     private function convertPathToRegex(string $path): string
     {
         $pattern = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $path);
+        $pattern = rtrim($pattern, '/');
+        if ($pattern === '') {
+            $pattern = '/';
+        }
 
-        return '#^' . rtrim($pattern, '/') . '$#';
+        return '#^' . $pattern . '$#';
     }
 
     private function findControllerClasses(): array

@@ -1,6 +1,7 @@
 {
     "require": {
-        "smarty/smarty": "^5.0"
+        "smarty/smarty": "^5.0",
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
