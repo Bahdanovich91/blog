@@ -18,31 +18,41 @@ class Router
      */
     public function __construct()
     {
-        $this->getRoutes();
+        $this->collectRoutes();
     }
 
     /**
      * @throws ReflectionException
      */
-    private function getRoutes(): void
+    private function collectRoutes(): void
     {
         foreach ($this->findControllerClasses() as $controllerClass) {
             $reflection = new ReflectionClass($controllerClass);
+
             foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $attributes = $method->getAttributes(Route::class);
+
                 foreach ($attributes as $attribute) {
                     /** @var Route $route */
                     $route = $attribute->newInstance();
-                    $key = $this->getRouteKey($route->methods, $route->path);
-                    $this->routes[$key] = [
+
+                    $this->routes[] = [
                         'controller' => $controllerClass,
                         'method' => $method->getName(),
                         'path' => $route->path,
                         'methods' => $route->methods,
+                        'pattern' => $this->convertPathToRegex($route->path),
                     ];
                 }
             }
         }
+    }
+
+    private function convertPathToRegex(string $path): string
+    {
+        $pattern = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $path);
+
+        return '#^' . rtrim($pattern, '/') . '$#';
     }
 
     private function findControllerClasses(): array
@@ -51,9 +61,8 @@ class Router
         $controllerDir = __DIR__ . '/../Controller';
         $namespace = 'App\\Controller';
 
-        var_dump($controllerDir);
-
         $baseDir = rtrim($controllerDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($controllerDir, FilesystemIterator::SKIP_DOTS)
         );
@@ -62,44 +71,57 @@ class Router
             if ($file->isFile() && $file->getExtension() === 'php') {
                 $fullPath = $file->getPathname();
                 $relativePath = substr($fullPath, strlen($baseDir));
-                $className = $namespace . '\\' . str_replace(DIRECTORY_SEPARATOR, '\\', substr($relativePath, 0, -4));
+
+                $className = $namespace . '\\' . str_replace(
+                        DIRECTORY_SEPARATOR,
+                        '\\',
+                        substr($relativePath, 0, -4)
+                    );
+
                 if (class_exists($className, true)) {
                     $classes[] = $className;
                 }
             }
         }
 
-        var_dump($classes);
-
         return $classes;
     }
 
-    private function getRouteKey(array $methods, string $path): string
+    public function dispatch(string $uri, string $method): void
     {
-        sort($methods);
-        return implode('|', $methods) . '|' . $path;
-    }
+        foreach ($this->routes as $route) {
+            if (!in_array($method, $route['methods'])) {
+                continue;
+            }
 
-    public function dispatch(string $uri, string $method)
-    {
-        $uri = parse_url($uri, PHP_URL_PATH);
-        $uri = rtrim($uri, '/');
+            if (preg_match($route['pattern'], $uri, $matches)) {
+                $params = $this->extractParams($matches);
 
-        if (empty($uri)) {
-            $uri = '/';
-        }
+                $controller = new $route['controller']();
 
-        foreach ($this->routes as $key => $route) {
-            if (in_array($method, $route['methods']) && $route['path'] === $uri) {
-                $controllerClass = $route['controller'];
-                $action = $route['method'];
-                $controller = new $controllerClass();
+                call_user_func_array(
+                    [$controller, $route['method']],
+                    $params
+                );
 
-                return $controller->$action();
+                return;
             }
         }
 
         http_response_code(404);
         echo "404 Not Found";
+    }
+
+    private function extractParams(array $matches): array
+    {
+        $params = [];
+
+        foreach ($matches as $key => $value) {
+            if (!is_int($key)) {
+                $params[] = $value;
+            }
+        }
+
+        return $params;
     }
 }

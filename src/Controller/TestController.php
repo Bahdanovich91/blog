@@ -11,4 +11,10 @@ class TestController
     {
         var_dump(1111);
     }
+
+    #[Route('/test/{id}')]
+    public function testShow(string $id): void
+    {
+        var_dump($id);
+    }
 }
