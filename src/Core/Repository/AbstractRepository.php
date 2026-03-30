@@ -1,9 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Core\Repository;
 
-abstract class AbstractRepository
+use App\Core\Database\Database;
+use App\Core\Mapping\ArrayToEntityMapper;
+
+abstract class AbstractRepository  implements RepositoryInterface
 {
     protected string $table;
     protected string $entity;

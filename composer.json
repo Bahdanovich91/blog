@@ -1,7 +1,10 @@
 {
     "require": {
         "smarty/smarty": "^5.0",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "nyholm/psr7": "*",
+        "nyholm/psr7-server": "*",
+        "laminas/laminas-httphandlerrunner": "*"
     },
     "autoload": {
         "psr-4": {

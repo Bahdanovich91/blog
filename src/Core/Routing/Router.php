@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Routing;
 
+use App\Core\Container\Container;
 use FilesystemIterator;
+use Psr\Http\Message\ServerRequestInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
@@ -12,13 +14,13 @@ use ReflectionMethod;
 class Router
 {
     private array $routes = [];
-    private string $controllerDir = __DIR__ . '/../Controller';
+    private string $controllerDir = __DIR__ . '/../../Controller';
     private string $controllerNamespace = 'App\\Controller';
 
     /**
      * @throws ReflectionException
      */
-    public function __construct()
+    public function __construct(private Container $container)
     {
         $this->collectRoutes();
     }
@@ -52,7 +54,7 @@ class Router
 
     private function convertPathToRegex(string $path): string
     {
-        $pattern = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $path);
+        $pattern = preg_replace('#\{(\w+)}#', '(?P<$1>[^/]+)', $path);
         $pattern = rtrim($pattern, '/');
         if ($pattern === '') {
             $pattern = '/';
@@ -91,7 +93,10 @@ class Router
         return $classes;
     }
 
-    public function dispatch(string $uri, string $method): void
+    /**
+     * @throws ReflectionException
+     */
+    public function dispatch(string $uri, string $method, $request): void
     {
         foreach ($this->routes as $route) {
             if (!in_array($method, $route['methods'])) {
@@ -101,13 +106,21 @@ class Router
             if (preg_match($route['pattern'], $uri, $matches)) {
                 $params = $this->extractParams($matches);
 
-                $controller = new $route['controller']();
+                $controller = $this->container->get($route['controller']);
 
-                call_user_func_array(
-                    [$controller, $route['method']],
-                    $params
-                );
+                $reflection = new \ReflectionMethod($controller, $route['method']);
+                $args = [];
 
+                foreach ($reflection->getParameters() as $param) {
+                    $type = $param->getType()?->getName();
+                    if ($type === ServerRequestInterface::class) {
+                        $args[] = $request;
+                    } else {
+                        $args[] = $params[$param->getName()] ?? null;
+                    }
+                }
+
+                call_user_func_array([$controller, $route['method']], $args);
                 return;
             }
         }

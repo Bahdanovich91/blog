@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Core\Mapping;
+
+use App\Core\Entity\EntityInterface;
 
 class ArrayToEntityMapper
 {
-    public function map(array $data, string $entityClass)
+    public function map(array $data, string $entityClass): EntityInterface
     {
         return new $entityClass($data);
     }
@@ -17,6 +19,7 @@ class ArrayToEntityMapper
         foreach ($data as $row) {
             $collection[] = $this->map($row, $entityClass);
         }
+
         return $collection;
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Core\Controller;
 
 use Smarty\Exception;
 use Smarty\Smarty;
@@ -15,9 +15,9 @@ abstract class BaseController
     {
         $this->smarty = new Smarty();
 
-        $this->smarty->setTemplateDir(__DIR__ . '/../../templates/');
-        $this->smarty->setCompileDir(__DIR__ . '/../../var/compile/');
-        $this->smarty->setCacheDir(__DIR__ . '/../../var/cache/');
+        $this->smarty->setTemplateDir(__DIR__ . '/../../../templates/');
+        $this->smarty->setCompileDir(__DIR__ . '/../../../var/compile/');
+        $this->smarty->setCacheDir(__DIR__ . '/../../../var/cache/');
     }
 
     /**

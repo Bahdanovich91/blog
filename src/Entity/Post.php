@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-class Post
+use App\Core\Entity\EntityInterface;
+
+class Post implements EntityInterface
 {
     protected int $id;
     protected string $title;
@@ -76,5 +78,20 @@ class Post
     public function getCreatedAt(): string
     {
         return $this->createdAt;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'image' => $this->image,
+            'description' => $this->description,
+            'content' => $this->content,
+            'view_count' => $this->viewCount,
+            'created_at' => $this->createdAt,
+            'categories' => array_map(fn($c) => $c->toArray(), $this->categories),
+        ];
     }
 }

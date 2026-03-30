@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-class Category
+use App\Core\Entity\EntityInterface;
+
+class Category implements EntityInterface
 {
     protected int $id;
     protected string $name;
@@ -37,5 +39,15 @@ class Category
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'description' => $this->description,
+        ];
     }
 }
