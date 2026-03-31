@@ -51,18 +51,6 @@ class PostService
         ];
     }
 
-    public function getPostBySlug(string $slug): ?Post
-    {
-        $post = $this->postRepository->findBySlug($slug);
-
-        if ($post === null) {
-            return null;
-        }
-
-        $categories = $this->categoryRepository->findByPost($post->getId());
-        return $post->withCategories($categories);
-    }
-
     public function recordView(int $postId): void
     {
         $this->postRepository->incrementViews($postId);
