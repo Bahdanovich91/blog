@@ -20,12 +20,10 @@ class Container
 
     public function get(string $id): object
     {
-        // Если уже создан экземпляр, возвращаем его
         if (isset($this->instances[$id])) {
             return $this->instances[$id];
         }
 
-        // Рефлексия для класса
         if (!class_exists($id)) {
             throw new Exception("Class $id not found");
         }
@@ -46,7 +44,6 @@ class Container
             $object = $reflection->newInstanceArgs($args);
         }
 
-        // Сохраняем для singleton-подобного поведения
         $this->instances[$id] = $object;
 
         return $object;
@@ -55,23 +52,6 @@ class Container
     private function resolveParameter(\ReflectionParameter $param)
     {
         $type = $param->getType();
-
-//        if ($type === null) {
-//            throw new Exception("Cannot resolve untyped parameter: {$param->getName()}");
-//        }
-//
-//        if (!$type instanceof ReflectionNamedType) {
-//            throw new Exception("Cannot resolve union/complex type: {$param->getName()}");
-//        }
-//
-//        if ($type->isBuiltin()) {
-//            if ($param->isDefaultValueAvailable()) {
-//                return $param->getDefaultValue();
-//            }
-//            throw new Exception("Cannot resolve builtin parameter: {$param->getName()}");
-//        }
-//
-//        return $this->get($type->getName());
 
         return match(true) {
             $type === null => throw new Exception("Cannot resolve untyped parameter: {$param->getName()}"),
