@@ -38,10 +38,15 @@ try {
 
     // Posts
     $lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    $images = [
+        'https://spaindmsmedia.newmindmedia.com/wsimgs/D847594BB89CF67E5669354512E9B33E7660A6DD.jpg',
+        'https://blog.wikium.ru/wp-content/uploads/2021/12/aiony-haust-3TLl_97HNJo-unsplash-240x300.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRac52fjA7FiKft4y6CbnJ-i7weObBALJ0I1y7zTGtUDERAaxLK',
+    ];
 
     $stmtPost = $pdo->prepare("
-        INSERT INTO posts (title, slug, description, content, view_count, created_at)
-        VALUES (:title, :slug, :description, :content, :views, NOW())
+        INSERT INTO posts (title, slug, description, content, image, view_count, created_at)
+        VALUES (:title, :slug, :description, :content, :image, :views, NOW())
     ");
 
     $stmtRelation = $pdo->prepare("
@@ -55,6 +60,7 @@ try {
             'slug' => "post-$i",
             'description' => $lorem,
             'content' => $lorem . ' ' . $lorem,
+            'image' => $images[array_rand($images)],
             'views' => random_int(0, 1000),
         ]);
 

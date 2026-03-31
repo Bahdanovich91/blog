@@ -4,7 +4,8 @@
         "ext-pdo": "*",
         "nyholm/psr7": "*",
         "nyholm/psr7-server": "*",
-        "laminas/laminas-httphandlerrunner": "*"
+        "laminas/laminas-httphandlerrunner": "*",
+        "scssphp/scssphp": "^1.12"
     },
     "autoload": {
         "psr-4": {
