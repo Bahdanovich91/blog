@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Controller;
 
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Smarty\Exception;
 use Smarty\Smarty;
 

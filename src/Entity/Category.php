@@ -9,8 +9,11 @@ use App\Core\Entity\EntityInterface;
 class Category implements EntityInterface
 {
     protected int $id;
+
     protected string $name;
+
     protected string $slug;
+
     protected ?string $description = null;
 
     public function __construct(array $data = [])

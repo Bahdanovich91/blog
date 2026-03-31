@@ -38,4 +38,29 @@ readonly class CategoryService
 
         return $sections;
     }
+
+    public function getCategoryPageData(string $slug, string $sort, int $page): ?array
+    {
+        $category = $this->categoryRepository->findOneBy(['slug' => $slug]);
+
+        if ($category === null) {
+            return null;
+        }
+
+        $result = $this->postRepository->getPaginatedByCategory(
+            $category->getId(),
+            $sort,
+            $page
+        );
+
+        return [
+            'category' => $category->toArray(),
+            'posts' => array_map(fn($p) => $p->toArray(), $result['posts']),
+            'current_sort' => $result['sort'],
+            'current_page' => $result['currentPage'],
+            'total_pages' => $result['totalPages'],
+            'pagination_base_url' => '/category/' . urlencode($category->getSlug()) . '?sort=' . $result['sort'],
+            'page_title' => $category->getName() . ' — Blogy',
+        ];
+    }
 }

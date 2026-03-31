@@ -133,14 +133,8 @@ class Router
 
     private function extractParams(array $matches): array
     {
-        $params = [];
-
-        foreach ($matches as $key => $value) {
-            if (!is_int($key)) {
-                $params[] = $value;
-            }
-        }
-
-        return $params;
+        return array_filter($matches, function ($key) {
+            return !is_int($key);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

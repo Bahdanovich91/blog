@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Core\Repository;
@@ -6,7 +7,7 @@ namespace App\Core\Repository;
 use App\Core\Database\Database;
 use App\Core\Mapping\ArrayToEntityMapper;
 
-abstract class AbstractRepository  implements RepositoryInterface
+abstract class AbstractRepository implements RepositoryInterface
 {
     protected string $table;
     protected string $entity;
@@ -21,17 +22,57 @@ abstract class AbstractRepository  implements RepositoryInterface
 
     public function findOne(int $id)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id = ?";
-        $row = $this->database->getRow($sql, [$id]);
-
-        return $row ? $this->mapper->map($row, $this->entity) : null;
+        return $this->findOneBy(['id' => $id]);
     }
 
     public function findAll(): array
     {
-        $sql = "SELECT * FROM {$this->table}";
-        $rows = $this->database->getAll($sql);
+        return $this->findBy();
+    }
+
+    public function findOneBy(array $criteria): ?object
+    {
+        $result = $this->findBy($criteria, limit: 1);
+
+        return $result[0] ?? null;
+    }
+
+    public function findBy(
+        array $criteria = [],
+        string $orderBy = '',
+        ?int $limit = null,
+        ?int $offset = null
+    ): array {
+        $conditions = '';
+        $params = [];
+
+        if (!empty($criteria)) {
+            $fields = array_keys($criteria);
+            $conditions = 'WHERE ' . implode(' AND ', array_map(fn($f) => "$f = ?", $fields));
+            $params = array_values($criteria);
+        }
+
+        $sql = "SELECT * FROM {$this->table} {$conditions}";
+
+        if ($orderBy) {
+            $sql .= " ORDER BY {$orderBy}";
+        }
+
+        if ($limit !== null) {
+            $sql .= " LIMIT {$limit}";
+        }
+
+        if ($offset !== null) {
+            $sql .= " OFFSET {$offset}";
+        }
+
+        $rows = $this->database->getAll($sql, $params);
 
         return $this->mapper->mapCollection($rows, $this->entity);
+    }
+
+    protected function execute(string $sql, array $params = []): void
+    {
+        $this->database->insert($sql, $params);
     }
 }

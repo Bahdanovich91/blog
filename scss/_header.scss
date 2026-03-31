@@ -1,0 +1,21 @@
+.site-header {
+    background-color: $color-primary;
+    padding: 16px 0;
+
+    .container {
+        display: flex;
+        align-items: center;
+    }
+
+    .site-logo {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-decoration: none;
+        letter-spacing: 0.5px;
+
+        &:hover {
+            color: rgba(255, 255, 255, 0.85);
+        }
+    }
+}

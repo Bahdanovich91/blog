@@ -9,13 +9,20 @@ use App\Core\Entity\EntityInterface;
 class Post implements EntityInterface
 {
     protected int $id;
+
     protected string $title;
+
     protected string $slug;
     protected ?string $image = null;
+
     protected ?string $description = null;
+
     protected string $content;
+
     protected int $viewCount = 0;
+
     protected string $createdAt;
+
     protected array $categories = [];
 
     public function __construct(array $data = [])
@@ -80,6 +87,11 @@ class Post implements EntityInterface
         return $this->createdAt;
     }
 
+    public function getCreatedAtFormatted(): string
+    {
+        return date('F d Y', strtotime($this->createdAt));
+    }
+
     public function toArray(): array
     {
         return [
@@ -91,6 +103,7 @@ class Post implements EntityInterface
             'content' => $this->content,
             'view_count' => $this->viewCount,
             'created_at' => $this->createdAt,
+            'created_at_formatted' => $this->getCreatedAtFormatted(),
             'categories' => array_map(fn($c) => $c->toArray(), $this->categories),
         ];
     }

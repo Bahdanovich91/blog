@@ -1,0 +1,50 @@
+@import 'variables';
+@import 'header';
+@import 'footer';
+@import 'cards';
+@import 'category';
+@import 'post';
+@import 'pagination';
+
+// ─── Reset & Base ─────────────────────────────────────────────────────────────
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: $font-size-base;
+}
+
+body {
+    font-family: $font-family;
+    background-color: $color-bg;
+    color: $color-text;
+    line-height: $line-height-base;
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: $color-link;
+}
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+
+.container {
+    max-width: $container-width;
+    margin: 0 auto;
+    padding: 0 $container-padding;
+}
+
+main {
+    min-height: calc(100vh - 140px);
+}

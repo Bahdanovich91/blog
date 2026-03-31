@@ -1,0 +1,101 @@
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.post-card {
+    background: $color-bg;
+    border-radius: $card-radius;
+    box-shadow: $card-shadow;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow $transition-speed ease, transform $transition-speed ease;
+
+    &:hover {
+        box-shadow: $card-shadow-hover;
+        transform: translateY(-2px);
+    }
+
+    &__image-wrap {
+        display: block;
+        overflow: hidden;
+        aspect-ratio: 16 / 10;
+        background: $color-bg-alt;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        &:hover img {
+            transform: scale(1.04);
+        }
+    }
+
+    &__image-placeholder {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        background: linear-gradient(135deg, $color-bg-alt, darken($color-bg-alt, 6%));
+    }
+
+    &__body {
+        padding: 18px 20px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 6px;
+        line-height: 1.4;
+
+        a {
+            color: $color-text;
+            text-decoration: none;
+
+            &:hover {
+                color: $color-primary;
+            }
+        }
+    }
+
+    &__meta {
+        font-size: 0.78rem;
+        color: $color-text-light;
+        margin-bottom: 10px;
+    }
+
+    &__excerpt {
+        font-size: 0.875rem;
+        color: $color-text-light;
+        line-height: 1.6;
+        flex: 1;
+        margin: 0 0 14px;
+    }
+
+    &__link {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $color-primary;
+        text-decoration: none;
+        display: inline-block;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

@@ -1,26 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{$page_title|escape}</title>
-</head>
-<body>
-<h1>{$page_title|escape}</h1>
+{extends file="layout.tpl"}
 
-{if $sections|@count > 0}
+{block name="title"}Blogy &mdash; Home{/block}
+
+{block name="content"}
     {foreach $sections as $section}
-        <h2>{$section.category.name|escape}</h2>
-        <ul>
-            {foreach $section.posts as $post}
-                <li>
-                    <strong>{$post.title|escape}</strong><br>
-                    {$post.content|escape}
-                </li>
-            {/foreach}
-        </ul>
+        <section class="category-section">
+            <div class="container">
+                <div class="category-section__header">
+                    <h2 class="category-section__name">{$section.category.name|escape|upper}</h2>
+                    <a href="{$base_url}/category/{$section.category.slug|escape}" class="category-section__view-all">View All</a>
+                </div>
+
+                <div class="cards-grid">
+                    {foreach $section.posts as $post}
+                        {include file="partials/post_card.tpl" post=$post}
+                    {/foreach}
+                </div>
+            </div>
+        </section>
+        {foreachelse}
+        <section class="category-section">
+            <div class="container">
+                <p>No posts available yet. Check back soon!</p>
+            </div>
+        </section>
     {/foreach}
-{else}
-    <p>No categories or posts found.</p>
-{/if}
-</body>
-</html>
+{/block}

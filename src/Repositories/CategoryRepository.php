@@ -18,4 +18,22 @@ class CategoryRepository extends AbstractRepository
         parent::__construct(Database::getInstance(), $mapper);
     }
 
+    public function findAll(): array
+    {
+        return $this->findBy(orderBy: 'name ASC');
+    }
+
+    public function findByPost(int $postId): array
+    {
+        $sql = "
+            SELECT c.* FROM categories AS c
+            JOIN post_category AS pc ON c.id = pc.category_id
+            WHERE pc.post_id = ?
+            ORDER BY c.name
+        ";
+
+        $rows = $this->database->getAll($sql, [$postId]);
+
+        return $this->mapper->mapCollection($rows, $this->entity);
+    }
 }
