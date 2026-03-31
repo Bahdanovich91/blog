@@ -62,39 +62,6 @@ class PostService
         return $this->postRepository->findSimilar($postId, $categoryIds, $limit);
     }
 
-//    public function getPostPageData(string $slug): ?array
-//    {
-//        $post = $this->postRepository->findOneBy(['slug' => $slug]);
-//
-//        if ($post === null) {
-//            return null;
-//        }
-//
-//        $this->postRepository->incrementViews($post->getId());
-//
-//        $categories = $this->categoryRepository->findByPost($post->getId());
-//        $post->setCategories($categories);
-//
-//        $categoryIds = array_map(fn($c) => $c->getId(), $categories);
-//
-//        $similarPosts = $this->postRepository->findSimilar(
-//            $post->getId(),
-//            $categoryIds
-//        );
-//
-//        $contentHtml = implode('', array_map(
-//            fn(string $p) => '<p>' . htmlspecialchars(trim($p), ENT_QUOTES, 'UTF-8') . '</p>',
-//            array_filter(explode("\n\n", $post->getContent()))
-//        ));
-//
-//        return [
-//            'post' => $post->toArray(),
-//            'post_content_html' => $contentHtml,
-//            'similar_posts' => array_map(fn($p) => $p->toArray(), $similarPosts),
-//            'page_title' => $post->getTitle() . ' — Blogy',
-//        ];
-//    }
-
     public function getPostPageData(string $slug): ?array
     {
         $post = $this->getPostWithCategories($slug);
