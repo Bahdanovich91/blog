@@ -22,9 +22,15 @@ class PostController extends BaseController
     #[Route('/post/{slug}')]
     public function show(ServerRequestInterface $request, string $slug): ResponseInterface
     {
-        $result = $this->postService->getPostPageData($slug);
-        $html = $this->render('post.tpl', $result);
+        $dto = $this->postService->getPostPageData($slug);
+        if ($dto === null) {
+            return new Response(404, [], 'Post not found');
+        }
 
-        return new Response(200, [], $html);
+        return new Response(
+            200,
+            [],
+            $this->render('post.tpl', $dto->toView())
+        );
     }
 }

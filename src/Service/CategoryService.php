@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\CategoryPageDto;
+use App\Dto\HomePageDto;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
@@ -11,11 +13,11 @@ readonly class CategoryService
 {
     public function __construct(
         private CategoryRepository $categoryRepository,
-        private PostRepository     $postRepository,
+        private PostRepository $postRepository,
     ) {
     }
 
-    public function getCategoriesWithLatestPosts(int $limit = 3): array
+    public function getHomePageData(int $limit = 3): HomePageDto
     {
         $categories = $this->categoryRepository->findAll();
         $sections = [];
@@ -36,11 +38,15 @@ readonly class CategoryService
             ];
         }
 
-        return $sections;
+        return new HomePageDto($sections);
     }
 
-    public function getCategoryPageData(string $slug, string $sort, string $direction, int $page): ?array
-    {
+    public function getCategoryPageData(
+        string $slug,
+        string $sort,
+        string $direction,
+        int $page
+    ): ?CategoryPageDto {
         $category = $this->categoryRepository->findOneBy(['slug' => $slug]);
         if ($category === null) {
             return null;
@@ -53,17 +59,13 @@ readonly class CategoryService
             $page
         );
 
-        return [
-            'category' => $category->toArray(),
-            'posts' => array_map(fn($p) => $p->toArray(), $result['posts']),
-            'current_sort' => $result['sort'],
-            'current_direction' => $result['direction'],
-            'current_page' => $result['currentPage'],
-            'total_pages' => $result['totalPages'],
-            'pagination_base_url' => '/category/' . urlencode($category->getSlug())
-                . '?sort=' . $result['sort']
-                . '&direction=' . $result['direction'],
-            'page_title' => $category->getName() . ' — Blogy',
-        ];
+        return new CategoryPageDto(
+            category: $category->toArray(),
+            posts: array_map(fn($p) => $p->toArray(), $result['posts']),
+            sort: $result['sort'],
+            direction: $result['direction'],
+            currentPage: $result['currentPage'],
+            totalPages: $result['totalPages'],
+        );
     }
 }

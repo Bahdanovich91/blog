@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -49,17 +50,17 @@ class PostRepository extends AbstractRepository
             'date'  => 'p.created_at',
             'views' => 'p.view_count',
         ];
+
         $sortField = $sortMap[$sort] ?? 'p.created_at';
 
         $direction = strtoupper($direction);
-        if (!in_array($direction, ['ASC', 'DESC'])) {
-            $direction = 'DESC';
-        }
+        $direction = $direction === 'ASC' ? 'ASC' : 'DESC';
 
-        $orderBy = "$sortField $direction";
+        $orderBy = sprintf('%s %s', $sortField, $direction);
 
         $total = $this->countByCategory($categoryId);
         $totalPages = (int) ceil($total / $perPage);
+
         $page = max(1, min($page, $totalPages ?: 1));
         $offset = ($page - 1) * $perPage;
 
@@ -113,4 +114,3 @@ class PostRepository extends AbstractRepository
         return $this->mapper->mapCollection($rows, $this->entity);
     }
 }
-

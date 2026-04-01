@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\PostPageDto;
 use App\Entity\Post;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
 class PostService
 {
-    private const SORT_MAP = [
+    private const array SORT_MAP = [
         'date' => 'p.created_at DESC',
         'views' => 'p.view_count DESC',
     ];
 
-    private const DEFAULT_SORT = 'date';
+    private const string DEFAULT_SORT = 'date';
 
     public function __construct(
         private readonly PostRepository $postRepository,
@@ -62,7 +63,7 @@ class PostService
         return $this->postRepository->findSimilar($postId, $categoryIds, $limit);
     }
 
-    public function getPostPageData(string $slug): ?array
+    public function getPostPageData(string $slug): ?PostPageDto
     {
         $post = $this->getPostWithCategories($slug);
 
@@ -74,18 +75,20 @@ class PostService
 
         $similarPosts = $this->getSimilarPostsFor($post);
 
-        return [
-            'post' => $post->toArray(),
-            'post_content_html' => $this->formatContent($post->getContent()),
-            'similar_posts' => array_map(fn($p) => $p->toArray(), $similarPosts),
-            'page_title' => $post->getTitle() . ' — Blogy',
-        ];
+        return new PostPageDto(
+            post: $post->toArray(),
+            contentHtml: $this->formatContent($post->getContent()),
+            similarPosts: array_map(
+                static fn($p) => $p->toArray(),
+                $similarPosts
+            ),
+            title: $post->getTitle() . ' — Blogy',
+        );
     }
 
     private function getPostWithCategories(string $slug): ?Post
     {
         $post = $this->postRepository->findOneBy(['slug' => $slug]);
-
         if ($post === null) {
             return null;
         }

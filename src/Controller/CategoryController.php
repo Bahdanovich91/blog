@@ -29,13 +29,15 @@ class CategoryController extends BaseController
         $direction = $queryParams['direction'] ?? 'DESC';
         $page = (int) ($queryParams['page'] ?? 1);
 
-        $result = $this->categoryService->getCategoryPageData($slug, $sort, $direction, $page);
-        if ($result === null) {
+        $dto = $this->categoryService->getCategoryPageData($slug, $sort, $direction, $page);
+        if ($dto === null) {
             return new Response(404, [], 'Category not found');
         }
 
-        $html = $this->render('category.tpl', $result);
-
-        return new Response(200, [], $html);
+        return new Response(
+            200,
+            [],
+            $this->render('category.tpl', $dto->toView($slug))
+        );
     }
 }

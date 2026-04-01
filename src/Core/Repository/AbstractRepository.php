@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Repository;
 
 use App\Core\Database\Database;
+use App\Core\Entity\EntityInterface;
 use App\Core\Mapping\ArrayToEntityMapper;
 
 abstract class AbstractRepository implements RepositoryInterface
@@ -30,7 +31,7 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this->findBy();
     }
 
-    public function findOneBy(array $criteria): ?object
+    public function findOneBy(array $criteria): ?EntityInterface
     {
         $result = $this->findBy($criteria, limit: 1);
 

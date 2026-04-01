@@ -20,18 +20,12 @@ class HomeController extends BaseController
     #[Route('/')]
     public function index(ServerRequestInterface $request): Response
     {
-        $sections = $this->categoryService->getCategoriesWithLatestPosts(3);
+        $dto = $this->categoryService->getHomePageData();
 
-        $templateSections = array_map(fn($s) => [
-            'category' => $s['category']->toArray(),
-            'posts' => array_map(fn($p) => $p->toArray(), $s['posts']),
-        ], $sections);
-
-        $html = $this->render('home.tpl', [
-            'sections' => $templateSections,
-            'page_title' => 'Blogy',
-        ]);
-
-        return new Response(200, [], $html);
+        return new Response(
+            200,
+            [],
+            $this->render('home.tpl', $dto->toView())
+        );
     }
 }
