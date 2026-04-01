@@ -20,7 +20,7 @@
                 {if $post.categories}
                     <span>
                         {foreach $post.categories as $cat}
-                            <a href="{$base_url}/category/{$cat.slug|escape}">{$cat.name|escape}</a>{if !$cat@last}, {/if}
+                            <a href="/category/{$cat.slug|escape}">{$cat.name|escape}</a>{if !$cat@last}, {/if}
                         {/foreach}
                     </span>
                 {/if}

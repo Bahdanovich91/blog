@@ -26,9 +26,13 @@ class CategoryController extends BaseController
         $queryParams = $request->getQueryParams();
 
         $sort = $queryParams['sort'] ?? 'date';
+        $direction = $queryParams['direction'] ?? 'DESC';
         $page = (int) ($queryParams['page'] ?? 1);
 
-        $result = $this->categoryService->getCategoryPageData($slug, $sort, $page);
+        $result = $this->categoryService->getCategoryPageData($slug, $sort, $direction, $page);
+        if ($result === null) {
+            return new Response(404, [], 'Category not found');
+        }
 
         $html = $this->render('category.tpl', $result);
 

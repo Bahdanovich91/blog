@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="category-section__header">
                     <h2 class="category-section__name">{$section.category.name|escape|upper}</h2>
-                    <a href="{$base_url}/category/{$section.category.slug|escape}" class="category-section__view-all">View All</a>
+                    <a href="/category/{$section.category.slug|escape}" class="category-section__view-all">View All</a>
                 </div>
 
                 <div class="cards-grid">

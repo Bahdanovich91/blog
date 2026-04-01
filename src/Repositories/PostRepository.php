@@ -41,20 +41,25 @@ class PostRepository extends AbstractRepository
     public function getPaginatedByCategory(
         int $categoryId,
         string $sort,
-        int $page,
+        string $direction = 'DESC',
+        int $page = 1,
         int $perPage = 9
     ): array {
         $sortMap = [
-            'date' => 'p.created_at DESC',
-            'views' => 'p.view_count DESC',
+            'date'  => 'p.created_at',
+            'views' => 'p.view_count',
         ];
+        $sortField = $sortMap[$sort] ?? 'p.created_at';
 
-        $sortKey = array_key_exists($sort, $sortMap) ? $sort : 'date';
-        $orderBy = $sortMap[$sortKey];
+        $direction = strtoupper($direction);
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'DESC';
+        }
+
+        $orderBy = "$sortField $direction";
 
         $total = $this->countByCategory($categoryId);
         $totalPages = (int) ceil($total / $perPage);
-
         $page = max(1, min($page, $totalPages ?: 1));
         $offset = ($page - 1) * $perPage;
 
@@ -63,7 +68,8 @@ class PostRepository extends AbstractRepository
             'total' => $total,
             'totalPages' => $totalPages,
             'currentPage' => $page,
-            'sort' => $sortKey,
+            'sort' => $sort,
+            'direction' => $direction,
         ];
     }
 

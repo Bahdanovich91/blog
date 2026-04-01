@@ -12,10 +12,15 @@
 
         <div class="sort-bar">
             <span>Sort by:</span>
-            <a href="{$base_url}/category/{$category.slug|escape}?sort=date"
-               class="{if $current_sort == 'date'}active{/if}">Date</a>
-            <a href="{$base_url}/category/{$category.slug|escape}?sort=views"
-               class="{if $current_sort == 'views'}active{/if}">Views</a>
+            <a href="/category/{$category.slug|escape}?sort=date&direction={if $current_sort == 'date' and $current_direction == 'ASC'}DESC{else}ASC{/if}"
+               class="{if $current_sort == 'date'}active{/if}">
+                Date {if $current_sort == 'date'}{if $current_direction == 'ASC'}↑{else}↓{/if}{/if}
+            </a>
+            <a href="/category/{$category.slug|escape}?sort=views&direction={if $current_sort == 'views' and $current_direction == 'ASC'}DESC{else}ASC{/if}"
+               class="{if $current_sort == 'views'}active{/if}">
+                Views {if $current_sort == 'views'}{if $current_direction == 'ASC'}↑{else}↓{/if}{/if}
+            </a>
+            <a href="/category/{$category.slug|escape}" class="reset">Reset</a>
         </div>
 
         {if $posts}
