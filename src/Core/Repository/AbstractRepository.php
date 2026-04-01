@@ -21,16 +21,6 @@ abstract class AbstractRepository implements RepositoryInterface
         $this->mapper = $mapper;
     }
 
-    public function findOne(int $id)
-    {
-        return $this->findOneBy(['id' => $id]);
-    }
-
-    public function findAll(): array
-    {
-        return $this->findBy();
-    }
-
     public function findOneBy(array $criteria): ?EntityInterface
     {
         $result = $this->findBy($criteria, limit: 1);

@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Dto\CategoryPageDto;
 use App\Dto\HomePageDto;
+use App\Entity\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
@@ -47,6 +48,7 @@ readonly class CategoryService
         string $direction,
         int $page
     ): ?CategoryPageDto {
+        /** @var ?Category $category */
         $category = $this->categoryRepository->findOneBy(['slug' => $slug]);
         if ($category === null) {
             return null;

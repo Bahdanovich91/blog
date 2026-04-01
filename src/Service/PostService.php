@@ -88,6 +88,7 @@ class PostService
 
     private function getPostWithCategories(string $slug): ?Post
     {
+        /** @var ?Post $post */
         $post = $this->postRepository->findOneBy(['slug' => $slug]);
         if ($post === null) {
             return null;
