@@ -54,7 +54,7 @@ try {
         VALUES (:post_id, :category_id)
     ");
 
-    for ($i = 1; $i <= 20; $i++) {
+    for ($i = 1; $i <= 40; $i++) {
         $stmtPost->execute([
             'title' => "Post $i",
             'slug' => "post-$i",
