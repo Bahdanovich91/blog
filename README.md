@@ -41,13 +41,13 @@ cd blog
 cp .env.example .env
 ```
 
-The default `.env` values match the Docker Compose service configuration:
+The default `.env` values (you can change these values if needed):
 
 ```
 DB_HOST=mysql
-DB_NAME=blogy
-DB_USER=blogy_user
-DB_PASSWORD=blogy_pass
+DB_NAME=app
+DB_USER=app
+DB_PASSWORD=secret
 ```
 
 ### 2. Start the containers

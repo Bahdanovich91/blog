@@ -18,18 +18,18 @@ services:
     depends_on:
       - mysql
     environment:
-      - DB_HOST=mysql
-      - DB_NAME=blogy
-      - DB_USER=blogy_user
-      - DB_PASSWORD=blogy_pass
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
 
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root_pass
-      MYSQL_DATABASE: blogy
-      MYSQL_USER: blogy_user
-      MYSQL_PASSWORD: blogy_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
