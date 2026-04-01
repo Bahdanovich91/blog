@@ -16,6 +16,14 @@ if (!file_exists($scssFile)) {
     exit(1);
 }
 
+$cssDir = dirname($cssFile);
+
+if (!is_dir($cssDir)) {
+    if (!mkdir($cssDir, 0777, true) && !is_dir($cssDir)) {
+        throw new RuntimeException("Cannot create directory: {$cssDir}");
+    }
+}
+
 $compiler = new Compiler();
 $compiler->setImportPaths([$root . '/scss']);
 $compiler->setOutputStyle(OutputStyle::COMPRESSED);
@@ -23,6 +31,7 @@ $compiler->setOutputStyle(OutputStyle::COMPRESSED);
 try {
     $result = $compiler->compileString(file_get_contents($scssFile));
     file_put_contents($cssFile, $result->getCss());
+
     echo "CSS compiled successfully to: {$cssFile}\n";
 } catch (\Exception $e) {
     fwrite(STDERR, "SCSS compilation failed: " . $e->getMessage() . "\n");
