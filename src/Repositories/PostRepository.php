@@ -8,6 +8,8 @@ use App\Core\Database\Database;
 use App\Core\Mapping\ArrayToEntityMapper;
 use App\Core\Repository\AbstractRepository;
 use App\Entity\Post;
+use App\Enum\SortDirection;
+use App\Enum\SortType;
 
 class PostRepository extends AbstractRepository
 {
@@ -41,26 +43,15 @@ class PostRepository extends AbstractRepository
 
     public function getPaginatedByCategory(
         int $categoryId,
-        string $sort,
-        string $direction = 'DESC',
+        SortType $sort,
+        SortDirection $direction,
         int $page = 1,
         int $perPage = 9
     ): array {
-        $sortMap = [
-            'date'  => 'p.created_at',
-            'views' => 'p.view_count',
-        ];
-
-        $sortField = $sortMap[$sort] ?? 'p.created_at';
-
-        $direction = strtoupper($direction);
-        $direction = $direction === 'ASC' ? 'ASC' : 'DESC';
-
-        $orderBy = sprintf('%s %s', $sortField, $direction);
+        $orderBy = sprintf('%s %s', $sort->getColumn(), $direction->value);
 
         $total = $this->countByCategory($categoryId);
         $totalPages = (int) ceil($total / $perPage);
-
         $page = max(1, min($page, $totalPages ?: 1));
         $offset = ($page - 1) * $perPage;
 
@@ -69,8 +60,8 @@ class PostRepository extends AbstractRepository
             'total' => $total,
             'totalPages' => $totalPages,
             'currentPage' => $page,
-            'sort' => $sort,
-            'direction' => $direction,
+            'sort' => $sort->value,
+            'direction' => $direction->value,
         ];
     }
 

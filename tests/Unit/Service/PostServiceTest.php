@@ -7,6 +7,7 @@ namespace Tests\Unit\Service;
 use App\Dto\PostPageDto;
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Enum\SortType;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 use App\Service\PostService;
@@ -102,7 +103,7 @@ class PostServiceTest extends TestCase
             ->once()
             ->andReturn($posts);
 
-        $result = $this->service->getPaginatedPostsByCategory(1, 'invalid_sort', 1, 9);
+        $result = $this->service->getPaginatedPostsByCategory(1, SortType::DATE, 1, 9);
 
         $this->assertSame($posts, $result['posts']);
         $this->assertEquals(12, $result['total']);
@@ -119,20 +120,5 @@ class PostServiceTest extends TestCase
             ->once();
 
         $this->service->recordView(5);
-    }
-
-    public function testGetSimilarPosts(): void
-    {
-        $posts = [new Post(['id' => 2]), new Post(['id' => 3])];
-
-        $this->postRepository
-            ->shouldReceive('findSimilar')
-            ->with(1, [2, 3], 2)
-            ->once()
-            ->andReturn($posts);
-
-        $result = $this->service->getSimilarPosts(1, [2, 3], 2);
-
-        $this->assertSame($posts, $result);
     }
 }

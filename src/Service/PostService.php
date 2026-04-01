@@ -6,34 +6,33 @@ namespace App\Service;
 
 use App\Dto\PostPageDto;
 use App\Entity\Post;
+use App\Enum\SortType;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
-class PostService
+readonly class PostService
 {
-    private const array SORT_MAP = [
-        'date' => 'p.created_at DESC',
-        'views' => 'p.view_count DESC',
-    ];
-
-    private const string DEFAULT_SORT = 'date';
-
     public function __construct(
-        private readonly PostRepository $postRepository,
-        private readonly CategoryRepository $categoryRepository,
-    ) {}
+        private PostRepository $postRepository,
+        private CategoryRepository $categoryRepository,
+    ) {
+    }
 
     /**
-     * @return array{posts: Post[], total: int, totalPages: int, currentPage: int, sort: string}
+     * @param int $categoryId
+     * @param SortType $sort
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array
      */
     public function getPaginatedPostsByCategory(
         int $categoryId,
-        string $sort,
+        SortType $sort,
         int $page,
         int $perPage = 9,
     ): array {
-        $sort = array_key_exists($sort, self::SORT_MAP) ? $sort : self::DEFAULT_SORT;
-        $orderBy = self::SORT_MAP[$sort];
+        $orderBy = sprintf('%s DESC', $sort->getColumn());
 
         $page = max(1, $page);
         $total = $this->postRepository->countByCategory($categoryId);
@@ -48,19 +47,13 @@ class PostService
             'total' => $total,
             'totalPages' => $totalPages,
             'currentPage' => $page,
-            'sort' => $sort,
+            'sort' => $sort->value,
         ];
     }
 
     public function recordView(int $postId): void
     {
         $this->postRepository->incrementViews($postId);
-    }
-
-    /** @return Post[] */
-    public function getSimilarPosts(int $postId, array $categoryIds, int $limit = 3): array
-    {
-        return $this->postRepository->findSimilar($postId, $categoryIds, $limit);
     }
 
     public function getPostPageData(string $slug): ?PostPageDto
@@ -73,7 +66,7 @@ class PostService
 
         $this->recordView($post->getId());
 
-        $similarPosts = $this->getSimilarPostsFor($post);
+        $similarPosts = $this->getSimilarPosts($post);
 
         return new PostPageDto(
             post: $post->toArray(),
@@ -100,9 +93,9 @@ class PostService
         return $post;
     }
 
-    private function getSimilarPostsFor(Post $post): array
+    private function getSimilarPosts(Post $post): array
     {
-        $categoryIds = array_map(fn($c) => $c->getId(), $post->getCategories());
+        $categoryIds = array_map(fn($category) => $category->getId(), $post->getCategories());
 
         return $this->postRepository->findSimilar(
             $post->getId(),

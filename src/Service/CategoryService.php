@@ -7,6 +7,8 @@ namespace App\Service;
 use App\Dto\CategoryPageDto;
 use App\Dto\HomePageDto;
 use App\Entity\Category;
+use App\Enum\SortDirection;
+use App\Enum\SortType;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
@@ -44,8 +46,8 @@ readonly class CategoryService
 
     public function getCategoryPageData(
         string $slug,
-        string $sort,
-        string $direction,
+        SortType $sort,
+        SortDirection $direction,
         int $page
     ): ?CategoryPageDto {
         /** @var ?Category $category */
@@ -63,7 +65,7 @@ readonly class CategoryService
 
         return new CategoryPageDto(
             category: $category->toArray(),
-            posts: array_map(fn($p) => $p->toArray(), $result['posts']),
+            posts: array_map(fn($post) => $post->toArray(), $result['posts']),
             sort: $result['sort'],
             direction: $result['direction'],
             currentPage: $result['currentPage'],

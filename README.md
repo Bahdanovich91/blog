@@ -18,6 +18,7 @@ A simple, fully functional blog built with pure PHP — no frameworks. Features 
 │   ├── Core/               # App, Router, Database, base Controller, etc.
 │   ├── Dto/                # DTOs
 │   ├── Entity/             # Entities
+│   ├── Enum/               # Enums
 │   ├── Repositories/       # Repositories
 │   └── Service/            # Business logic
 ├── templates/              # Smarty .tpl files

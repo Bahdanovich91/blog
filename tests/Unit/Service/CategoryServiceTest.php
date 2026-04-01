@@ -8,6 +8,8 @@ use App\Dto\CategoryPageDto;
 use App\Dto\HomePageDto;
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Enum\SortType;
+use App\Enum\SortDirection;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 use App\Service\CategoryService;
@@ -99,11 +101,11 @@ class CategoryServiceTest extends TestCase
 
         $this->postRepository
             ->shouldReceive('getPaginatedByCategory')
-            ->with(2, 'date', 'DESC', 1)
+            ->with(2, SortType::DATE, SortDirection::DESC, 1)
             ->once()
             ->andReturn($paginationResult);
 
-        $dto = $this->service->getCategoryPageData('design', 'date', 'DESC', 1);
+        $dto = $this->service->getCategoryPageData('design', SortType::DATE, SortDirection::DESC, 1);
 
         $this->assertInstanceOf(CategoryPageDto::class, $dto);
         $this->assertSame($category->toArray(), $dto->category);
@@ -120,7 +122,7 @@ class CategoryServiceTest extends TestCase
             ->once()
             ->andReturn(null);
 
-        $dto = $this->service->getCategoryPageData('missing', 'date', 'DESC', 1);
+        $dto = $this->service->getCategoryPageData('missing', SortType::DATE, SortDirection::DESC, 1);
 
         $this->assertNull($dto);
     }

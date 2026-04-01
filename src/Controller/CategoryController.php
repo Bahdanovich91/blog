@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\Core\Controller\BaseController;
 use App\Core\Routing\Route;
+use App\Enum\SortDirection;
+use App\Enum\SortType;
 use App\Service\CategoryService;
 use App\Service\PostService;
 use Nyholm\Psr7\Response;
@@ -25,8 +27,10 @@ class CategoryController extends BaseController
     {
         $queryParams = $request->getQueryParams();
 
-        $sort = $queryParams['sort'] ?? 'date';
-        $direction = $queryParams['direction'] ?? 'DESC';
+        $sort = SortType::fromString($queryParams['sort'] ?? 'date');
+        $direction = SortDirection::fromString($queryParams['direction'] ?? 'DESC');
+//        $sort = $queryParams['sort'] ?? 'date';
+//        $direction = $queryParams['direction'] ?? 'DESC';
         $page = (int) ($queryParams['page'] ?? 1);
 
         $dto = $this->categoryService->getCategoryPageData($slug, $sort, $direction, $page);
