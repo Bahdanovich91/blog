@@ -16,11 +16,14 @@ A simple, fully functional blog built with pure PHP — no frameworks. Features 
 ├── src/
 │   ├── Controller/         # Controllers
 │   ├── Core/               # App, Router, Database, base Controller, etc.
+│   ├── Dto/                # DTOs
 │   ├── Entity/             # Entities
 │   ├── Repositories/       # Repositories
 │   └── Service/            # Business logic
 ├── templates/              # Smarty .tpl files
 │   └── partials/           # Reusable partials (header, footer, post_card, pagination)
+└── tests/
+    └── Unit/               # PHPUnit tests
 ```
 
 ## Getting Started
@@ -57,7 +60,7 @@ The database schema is created automatically on the first run from `docker/mysql
 ### 3. Install dependencies
 
 ```bash
-docker-compose exec php composer install
+docker compose exec php composer install
 ```
 
 ### 4. Seed the database
@@ -77,3 +80,15 @@ php bin/compile-css.php
 ### 6. Open the site
 
 Visit [http://localhost:8080](http://localhost:8080)
+
+## Running phpstan
+
+```bash
+docker compose exec php composer phpstan
+```
+
+## Running Tests
+
+```bash
+docker compose exec php vendor/bin/phpunit
+```
